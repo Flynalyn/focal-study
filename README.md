@@ -1,4 +1,4 @@
-# FocusBuddy
+# Focal Study
 
 A comprehensive student productivity SaaS application designed to help students stay focused, organized, and motivated.
 
@@ -36,7 +36,7 @@ A comprehensive student productivity SaaS application designed to help students 
 - ✅ Daily motivational message
 - ✅ 7-day session history
 
-### Premium Tier ($4.99/month)
+### Premium Tier (Annual Subscription)
 - ✅ All Free Tier features
 - ✅ Customizable Pomodoro intervals
 - ✅ Unlimited assignments
@@ -48,17 +48,7 @@ A comprehensive student productivity SaaS application designed to help students 
 - ✅ Custom motivational messages
 
 ## Tech Stack
-
 - Frontend: React/Next.js
 - Backend: Node.js/Express
 - Database: PostgreSQL
-- Authentication: JWT
-- Payment Processing: Stripe API
-
-## Getting Started
-
-Coming soon! This repository will contain the full source code and setup instructions.
-
-## License
-
-MIT License
+- Payment Processing: Stripe
