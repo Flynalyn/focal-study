@@ -12,48 +12,48 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>FocusBuddy - Your Study Companion</title>
-        <meta name="description" content="Stay focused and organized with FocusBuddy" />
+        <title>Focal Study - Your Study Companion</title>
+        <meta name="description" content="Stay focused and organized with Focal Study" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <span className={styles.highlight}>FocusBuddy</span>
+          Welcome to <span className={styles.highlight}>Focal Study</span>
         </h1>
-
+        
         <p className={styles.description}>
           Your all-in-one study companion for productivity and focus
         </p>
 
         <div className={styles.grid}>
           <div className={styles.card}>
-            <h2>Pomodoro Timer</h2>
+            <h2>🍅 Pomodoro Timer</h2>
             <PomodoroTimer isPremium={isPremium} />
           </div>
 
           <div className={styles.card}>
-            <h2>Assignment Planner</h2>
+            <h2>📚 Assignment Planner</h2>
             <AssignmentPlanner isPremium={isPremium} />
           </div>
 
           <div className={styles.card}>
-            <h2>Motivational Messages</h2>
-            <MotivationalMessages />
+            <h2>💪 Motivational Messages</h2>
+            <MotivationalMessages isPremium={isPremium} />
           </div>
 
           <div className={styles.card}>
-            <h2>Subscription</h2>
+            <h2>💳 Focal Study Premium</h2>
             <StripeSubscription 
+              onSubscriptionChange={setIsPremium}
               isPremium={isPremium}
-              setIsPremium={setIsPremium}
             />
           </div>
         </div>
       </main>
 
       <footer className={styles.footer}>
-        <p>© 2025 FocusBuddy - Stay Focused, Stay Productive</p>
+        <p>© 2025 Focal Study - Stay Focused, Stay Productive</p>
       </footer>
     </div>
   );
