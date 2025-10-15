@@ -7,7 +7,7 @@ const StripeSubscription = ({ isPremium, setIsPremium }) => {
   const [expiry, setExpiry] = useState('');
   const [cvv, setCvv] = useState('');
 
-  // Placeholder Stripe subscription logic
+  // Stripe subscription logic for annual Focal Study Premium subscription
   const handleSubscribe = async () => {
     if (!cardNumber || !expiry || !cvv) {
       alert('Please fill in all payment details');
@@ -16,231 +16,207 @@ const StripeSubscription = ({ isPremium, setIsPremium }) => {
 
     setLoading(true);
 
-    // Simulate API call to Stripe
-    // In production, this would integrate with Stripe API:
-    // const stripe = await loadStripe('your-publishable-key');
-    // const { error } = await stripe.confirmCardPayment(clientSecret, {...});
-    
-    setTimeout(() => {
+    try {
+      // Call backend API to create Stripe Checkout session
+      const response = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: 'user-id-placeholder', // Should come from auth context
+          email: 'user@example.com', // Should come from auth context
+        }),
+      });
+
+      const { url, error } = await response.json();
+      
+      if (error) {
+        alert('Failed to create checkout session: ' + error);
+        setLoading(false);
+        return;
+      }
+
+      // Redirect to Stripe Checkout
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      alert('Failed to create checkout session. Please try again.');
       setLoading(false);
-      setIsPremium(true);
-      setShowPaymentForm(false);
-      alert('Subscription successful! You are now a Premium member.');
-      // Reset form
-      setCardNumber('');
-      setExpiry('');
-      setCvv('');
-    }, 2000);
+    }
   };
 
   const handleCancel = () => {
-    if (window.confirm('Are you sure you want to cancel your Premium subscription?')) {
-      setIsPremium(false);
-      alert('Subscription cancelled. You will retain Premium features until the end of your billing period.');
+    setShowPaymentForm(false);
+    setCardNumber('');
+    setExpiry('');
+    setCvv('');
+  };
+
+  const handleManageBilling = async () => {
+    setLoading(true);
+    
+    try {
+      // Call backend API to create Billing Portal session
+      const response = await fetch('/api/stripe/create-billing-portal-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          customerId: 'customer-id-placeholder', // Should come from user's stored Stripe customer ID
+        }),
+      });
+
+      const { url, error } = await response.json();
+      
+      if (error) {
+        alert('Failed to open billing portal: ' + error);
+        setLoading(false);
+        return;
+      }
+
+      // Redirect to Stripe Billing Portal
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Error opening billing portal:', error);
+      alert('Failed to open billing portal. Please try again.');
+      setLoading(false);
     }
   };
 
   if (isPremium) {
     return (
-      <div style={{ padding: '20px' }}>
-        <div
+      <div>
+        <p>✅ You are a <strong>Focal Study Premium</strong> member!</p>
+        <p>Annual Subscription Active</p>
+        <button 
+          onClick={handleManageBilling}
+          disabled={loading}
           style={{
-            padding: '20px',
-            backgroundColor: '#d4edda',
-            border: '1px solid #c3e6cb',
-            borderRadius: '8px',
-            marginBottom: '15px'
+            padding: '10px 20px',
+            backgroundColor: '#0066cc',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: loading ? 'not-allowed' : 'pointer',
           }}
         >
-          <h3 style={{ margin: '0 0 10px 0', color: '#155724' }}>✓ Premium Active</h3>
-          <p style={{ margin: 0, color: '#155724' }}>
-            You have access to all premium features including unlimited assignments and custom timer durations.
-          </p>
-        </div>
+          {loading ? 'Loading...' : 'Manage Billing'}
+        </button>
+      </div>
+    );
+  }
 
-        <div style={{ padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-          <h4 style={{ margin: '0 0 10px 0' }}>Subscription Details</h4>
-          <p style={{ margin: '5px 0', color: '#666' }}>Plan: Premium Monthly</p>
-          <p style={{ margin: '5px 0', color: '#666' }}>Price: $9.99/month</p>
-          <p style={{ margin: '5px 0', color: '#666' }}>Status: Active</p>
-          <p style={{ margin: '5px 0', color: '#666' }}>Next billing: {new Date(Date.now() + 30*24*60*60*1000).toLocaleDateString()}</p>
-        </div>
-
-        <button
-          onClick={handleCancel}
+  if (!showPaymentForm) {
+    return (
+      <div>
+        <h3>Upgrade to Focal Study Premium</h3>
+        <p><strong>Annual Subscription</strong></p>
+        <ul style={{ textAlign: 'left', marginLeft: '20px' }}>
+          <li>Customizable Pomodoro intervals</li>
+          <li>Unlimited assignments</li>
+          <li>Advanced productivity analytics</li>
+          <li>Priority support</li>
+          <li>Ad-free experience</li>
+        </ul>
+        <button 
+          onClick={() => setShowPaymentForm(true)}
           style={{
-            marginTop: '15px',
             padding: '10px 20px',
-            backgroundColor: '#dc3545',
+            backgroundColor: '#0066cc',
             color: 'white',
             border: 'none',
             borderRadius: '5px',
             cursor: 'pointer',
-            fontSize: '14px'
+            marginTop: '10px',
           }}
         >
-          Cancel Subscription
+          Subscribe Now
         </button>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <div
-        style={{
-          padding: '20px',
-          backgroundColor: '#fff3cd',
-          border: '1px solid #ffeaa7',
-          borderRadius: '8px',
-          marginBottom: '20px'
-        }}
-      >
-        <h3 style={{ margin: '0 0 10px 0', color: '#856404' }}>Upgrade to Premium</h3>
-        <p style={{ margin: 0, color: '#856404' }}>
-          Unlock unlimited assignments, custom timer durations, and priority support!
-        </p>
-      </div>
-
-      <div style={{ padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px', marginBottom: '20px' }}>
-        <h4 style={{ margin: '0 0 15px 0' }}>Premium Features:</h4>
-        <ul style={{ margin: 0, paddingLeft: '20px' }}>
-          <li style={{ marginBottom: '8px' }}>Unlimited assignments tracking</li>
-          <li style={{ marginBottom: '8px' }}>Custom Pomodoro timer durations (45min, 60min, etc.)</li>
-          <li style={{ marginBottom: '8px' }}>Priority customer support</li>
-          <li style={{ marginBottom: '8px' }}>Advanced analytics (coming soon)</li>
-          <li style={{ marginBottom: '8px' }}>Ad-free experience</li>
-        </ul>
-      </div>
-
-      {!showPaymentForm ? (
-        <button
-          onClick={() => setShowPaymentForm(true)}
-          style={{
-            padding: '12px 30px',
-            backgroundColor: '#667eea',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            fontSize: '16px',
-            fontWeight: 'bold'
-          }}
-        >
-          Subscribe for $9.99/month
-        </button>
-      ) : (
-        <div style={{ padding: '20px', backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px' }}>
-          <h4 style={{ margin: '0 0 15px 0' }}>Payment Details</h4>
-          <p style={{ fontSize: '12px', color: '#999', marginBottom: '15px' }}>
-            (Placeholder form - In production, use Stripe Elements for secure payment processing)
-          </p>
-          
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: '500' }}>
-              Card Number
-            </label>
+    <div>
+      <h3>Focal Study Premium - Annual Subscription</h3>
+      <form onSubmit={(e) => { e.preventDefault(); handleSubscribe(); }}>
+        <div style={{ marginBottom: '10px' }}>
+          <label>
+            Card Number:
             <input
               type="text"
-              placeholder="1234 5678 9012 3456"
               value={cardNumber}
               onChange={(e) => setCardNumber(e.target.value)}
+              placeholder="1234 5678 9012 3456"
               maxLength="19"
-              style={{
-                width: '100%',
-                padding: '10px',
-                border: '1px solid #ccc',
-                borderRadius: '5px',
-                fontSize: '14px',
-                boxSizing: 'border-box'
-              }}
+              style={{ width: '100%', padding: '5px', marginTop: '5px' }}
             />
-          </div>
-
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: '500' }}>
-                Expiry (MM/YY)
-              </label>
-              <input
-                type="text"
-                placeholder="12/25"
-                value={expiry}
-                onChange={(e) => setExpiry(e.target.value)}
-                maxLength="5"
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #ccc',
-                  borderRadius: '5px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box'
-                }}
-              />
-            </div>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: '500' }}>
-                CVV
-              </label>
-              <input
-                type="text"
-                placeholder="123"
-                value={cvv}
-                onChange={(e) => setCvv(e.target.value)}
-                maxLength="4"
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #ccc',
-                  borderRadius: '5px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box'
-                }}
-              />
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button
-              onClick={handleSubscribe}
-              disabled={loading}
-              style={{
-                flex: 1,
-                padding: '12px',
-                backgroundColor: loading ? '#ccc' : '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                fontSize: '14px',
-                fontWeight: 'bold'
-              }}
-            >
-              {loading ? 'Processing...' : 'Complete Subscription'}
-            </button>
-            <button
-              onClick={() => setShowPaymentForm(false)}
-              disabled={loading}
-              style={{
-                flex: 1,
-                padding: '12px',
-                backgroundColor: '#6c757d',
-                color: 'white',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer',
-                fontSize: '14px'
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-
-          <p style={{ fontSize: '11px', color: '#999', marginTop: '15px', textAlign: 'center' }}>
-            🔒 Secure payment powered by Stripe (placeholder)
-          </p>
+          </label>
         </div>
-      )}
+        <div style={{ marginBottom: '10px' }}>
+          <label>
+            Expiry (MM/YY):
+            <input
+              type="text"
+              value={expiry}
+              onChange={(e) => setExpiry(e.target.value)}
+              placeholder="12/25"
+              maxLength="5"
+              style={{ width: '100%', padding: '5px', marginTop: '5px' }}
+            />
+          </label>
+        </div>
+        <div style={{ marginBottom: '10px' }}>
+          <label>
+            CVV:
+            <input
+              type="text"
+              value={cvv}
+              onChange={(e) => setCvv(e.target.value)}
+              placeholder="123"
+              maxLength="4"
+              style={{ width: '100%', padding: '5px', marginTop: '5px' }}
+            />
+          </label>
+        </div>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button 
+            type="submit"
+            disabled={loading}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: loading ? '#ccc' : '#0066cc',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: loading ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {loading ? 'Processing...' : 'Subscribe'}
+          </button>
+          <button 
+            type="button"
+            onClick={handleCancel}
+            disabled={loading}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#666',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: loading ? 'not-allowed' : 'pointer',
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
