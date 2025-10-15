@@ -1,7 +1,7 @@
 {
-  "name": "focusbuddy",
+  "name": "focal-study",
   "version": "1.0.0",
-  "description": "A Pomodoro timer and study planner app with premium features",
+  "description": "Focal Study - A comprehensive student productivity SaaS application with Pomodoro timer, assignment planner, and premium features",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -15,7 +15,9 @@
     "timer",
     "productivity",
     "focus",
-    "assignment-tracker"
+    "assignment-tracker",
+    "focal-study",
+    "student-productivity"
   ],
   "author": "Flynalyn",
   "license": "MIT",
@@ -34,20 +36,14 @@
     "validator": "^13.11.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2",
-    "eslint": "^8.55.0",
-    "prettier": "^3.1.1"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "nodemon": "^3.0.2"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Flynalyn/focusbuddy.git"
+    "url": "https://github.com/Flynalyn/focal-study"
   },
   "bugs": {
-    "url": "https://github.com/Flynalyn/focusbuddy/issues"
+    "url": "https://github.com/Flynalyn/focal-study/issues"
   },
-  "homepage": "https://github.com/Flynalyn/focusbuddy#readme"
+  "homepage": "https://github.com/Flynalyn/focal-study#readme"
 }
